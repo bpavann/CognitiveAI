@@ -9,3 +9,5 @@ langchain-ollama
 langchain-google-genai
 langchain-tavily
 deepagents
+langchain-mcp-adapters
+mcp

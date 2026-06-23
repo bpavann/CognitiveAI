@@ -1,0 +1,169 @@
+{
+    "source_system": "demo_ecommerce_platform",
+    "exported_at": "2026-06-23T14:30:00Z",
+    "batch_id": "ING-20260623-001",
+    "records": [
+      {
+        "order_id": "ORD-10001",
+        "order_date": "2026-06-20T10:15:42Z",
+        "status": "completed",
+        "customer": {
+          "customer_id": 501,
+          "full_name": "Ava Martinez",
+          "email": "ava.martinez@example.com",
+          "phone": "+1-212-555-0184",
+          "date_of_birth": "1992-08-17",
+          "marketing_opt_in": true,
+          "address": {
+            "street": "125 Hudson Street",
+            "city": "New York",
+            "state": "NY",
+            "postal_code": "10013",
+            "country": "US"
+          }
+        },
+        "items": [
+          {
+            "sku": "LAP-14-PRO",
+            "product_name": "14-inch Pro Laptop",
+            "category": "Electronics",
+            "unit_price": 1299.99,
+            "quantity": 1,
+            "discount": 100.0
+          },
+          {
+            "sku": "ACC-USBC-01",
+            "product_name": "USB-C Adapter",
+            "category": "Accessories",
+            "unit_price": 24.5,
+            "quantity": 2,
+            "discount": 0
+          }
+        ],
+        "payment": {
+          "method": "credit_card",
+          "transaction_id": "txn_8FJ2K11",
+          "currency": "USD",
+          "subtotal": 1348.99,
+          "tax": 119.57,
+          "shipping_cost": 0,
+          "total": 1468.56
+        },
+        "shipping": {
+          "carrier": "UPS",
+          "tracking_number": "1Z999AA10123456784",
+          "shipped_at": "2026-06-20T16:22:10Z",
+          "delivered_at": "2026-06-22T13:05:31Z"
+        },
+        "tags": [
+          "priority",
+          "repeat_customer"
+        ],
+        "metadata": {
+          "sales_channel": "web",
+          "coupon_code": "WELCOME10",
+          "device": "mobile"
+        }
+      },
+      {
+        "order_id": "ORD-10002",
+        "order_date": "2026-06-21T08:04:12Z",
+        "status": "processing",
+        "customer": {
+          "customer_id": "502",
+          "full_name": "Noah Williams",
+          "email": "noah.williams@example.com",
+          "phone": null,
+          "date_of_birth": null,
+          "marketing_opt_in": false,
+          "address": {
+            "street": "47 Market Lane",
+            "city": "Boston",
+            "state": "MA",
+            "postal_code": "02108",
+            "country": "USA"
+          }
+        },
+        "items": [
+          {
+            "sku": "HOME-LAMP-04",
+            "product_name": "Desk Lamp",
+            "category": "Home",
+            "unit_price": "49.99",
+            "quantity": 1,
+            "discount": null
+          }
+        ],
+        "payment": {
+          "method": "paypal",
+          "transaction_id": "PAY-551920",
+          "currency": "USD",
+          "subtotal": 49.99,
+          "tax": 3.12,
+          "shipping_cost": 7.5,
+          "total": 60.61
+        },
+        "shipping": {
+          "carrier": null,
+          "tracking_number": null,
+          "shipped_at": null,
+          "delivered_at": null
+        },
+        "tags": [],
+        "metadata": {
+          "sales_channel": "marketplace",
+          "coupon_code": null,
+          "device": "desktop"
+        }
+      },
+      {
+        "order_id": "ORD-10003",
+        "order_date": "2026-06-22T18:45:00Z",
+        "status": "cancelled",
+        "customer": {
+          "customer_id": 503,
+          "full_name": "Liam Chen",
+          "email": "liam.chen@example.com",
+          "phone": "+1-415-555-0199",
+          "date_of_birth": "1987-02-03",
+          "marketing_opt_in": true,
+          "address": {
+            "street": "800 Mission Street",
+            "city": "San Francisco",
+            "state": "CA",
+            "postal_code": "94103",
+            "country": "US"
+          }
+        },
+        "items": [
+          {
+            "sku": "FIT-WATCH-02",
+            "product_name": "Fitness Watch",
+            "category": "Wearables",
+            "unit_price": 199.0,
+            "quantity": 1,
+            "discount": 0
+          }
+        ],
+        "payment": {
+          "method": "credit_card",
+          "transaction_id": null,
+          "currency": "USD",
+          "subtotal": 199.0,
+          "tax": 0,
+          "shipping_cost": 0,
+          "total": 0
+        },
+        "shipping": null,
+        "tags": [
+          "cancelled_by_customer"
+        ],
+        "metadata": {
+          "sales_channel": "web",
+          "coupon_code": "FITNESS25",
+          "device": "tablet",
+          "cancellation_reason": "Changed mind"
+        }
+      }
+    ]
+  }

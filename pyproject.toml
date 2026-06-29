@@ -45,4 +45,5 @@ dependencies = [
     "python-magic>=0.4.27",
     "langchain-opendataloader-pdf>=2.0.0",
     "langchain-pymupdf4llm>=1.27.2",
+    "langchain-chroma>=1.1.0",
 ]

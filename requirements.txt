@@ -41,6 +41,7 @@ unstructured-client
 python-magic
 langchain-opendataloader-pdf
 langchain-pymupdf4llm
+langchain_chroma
 
 
 

@@ -5,6 +5,12 @@ langchain_community
 langchain-openai
 langchain-groq
 python-dotenv
+
+fastapi
+uvicorn[standard]
+pydantic-settings
+streamlit
+
 langchain-ollama
 langchain-google-genai
 langchain-tavily
@@ -43,6 +49,12 @@ langchain-opendataloader-pdf
 langchain-pymupdf4llm
 langchain_chroma
 
+logfire
+portkey_ai
+jinja2
 
+pytest 
+httpx 
+ruff
 
 

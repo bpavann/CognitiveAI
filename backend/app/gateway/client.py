@@ -1,9 +1,6 @@
-import logfire
 from portkey_ai import Portkey,createHeaders, PORTKEY_GATEWAY_URL
 from langchain_openai import ChatOpenAI
 from app.core.settings import settings
-
-logfire.configure()
 
 # Initialize Portkey client
 portkey_client = Portkey(
@@ -26,25 +23,23 @@ def get_llm(feature: str = "cognitiveai-chat") -> ChatOpenAI:
     CognitiveAI only needs to request an LLM
     through this interface..
     """
-    with logfire.span("llm_creation", feature=feature):
-       
-        return ChatOpenAI(
-            base_url=PORTKEY_GATEWAY_URL,
+    return ChatOpenAI(
+        base_url=PORTKEY_GATEWAY_URL,
+        api_key=settings.PORTKEY_API_KEY,
+        # Primary model.
+        # Fallbacks are handled by the Portkey Config.
+        model=f"@{settings.OPENAI_SLUG}/gpt-4.1-mini",
+        temperature=0,
+        default_headers=createHeaders(
             api_key=settings.PORTKEY_API_KEY,
-            # Primary model.
-            # Fallbacks are handled by the Portkey Config.
-            model=f"@{settings.OPENAI_SLUG}/gpt-4.1-mini",
-            temperature=0,
-            default_headers=createHeaders(
-                api_key=settings.PORTKEY_API_KEY,
-                config=settings.PORTKEY_CONFIG_ID,
-                metadata={
-                    "feature": feature,
-                    "_user": settings.app_name,
-                    "environment": settings.environment
-                },
-            ),
-        )
+            config=settings.PORTKEY_CONFIG_ID,
+            metadata={
+                "feature": feature,
+                "_user": settings.app_name,
+                "environment": settings.environment
+            },
+        ),
+    )
 
 # Function to extract cache status from Portkey response
 def extract_cache_status(response) -> str:

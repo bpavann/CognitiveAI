@@ -26,6 +26,7 @@ langchain_unstructured
 pypdf
 python-dotenv
 pymupdf
+pdfplumber
 unstructured
 pdfminer
 python-docx
@@ -50,11 +51,15 @@ langchain-pymupdf4llm
 langchain_chroma
 
 logfire
+"logfire[fastapi]"
 portkey_ai
 jinja2
 
 pytest 
 httpx 
 ruff
+
+qdrant_client
+flashrank
 
 

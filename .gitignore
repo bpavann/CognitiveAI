@@ -9,6 +9,10 @@ __pycache__/
 .DS_Store/
 /.DS_Store
 
+processed_data/
+
+backend/temp/
+
 # Distribution / packaging
 .Python
 build/

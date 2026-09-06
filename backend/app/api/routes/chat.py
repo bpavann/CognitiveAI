@@ -1,7 +1,7 @@
 import logfire
 from fastapi import APIRouter
 from pydantic import BaseModel
-from app.gateway.service import LLMService
+from app.services.llmgateway.service import LLMService
 
 router = APIRouter()
 llm_service = LLMService()

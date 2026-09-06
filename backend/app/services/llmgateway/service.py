@@ -1,6 +1,5 @@
 import logfire
-from langchain_core.messages import HumanMessage
-from app.gateway.client import get_llm
+from app.services.llmgateway.client import get_llm
 
 
 class LLMService:

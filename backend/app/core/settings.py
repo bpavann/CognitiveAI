@@ -33,7 +33,7 @@ class Settings:
     # Vector Database - Qdrant
     QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
     QDRANT_URL = os.getenv("QDRANT_URL")
-    QDRANT_COLLECTION = "enterprise_rag"
+    QDRANT_COLLECTION = "CognitiveAI"
 
     # Groq Fallback
     GROQ_FALLBACK_API_KEY = os.getenv("GROQ_FALLBACK_API_KEY")

@@ -35,46 +35,27 @@ print(qdrant_client.collection_exists(settings.QDRANT_COLLECTION))
 
 # Constants
 SUPPORTED_EXTENSIONS = {".pdf",".html",".htm",".txt",".json",".csv",".docx",".pptx",".xlsx"}
-VALID_INDUSTRIES = {"logistics","ecommerce","enterprise","finance"}
-VALID_DATA_QUALITY = {"clean","noisy"}
-
-VALID_INDUSTRIES = {
-    "logistics",
-    "ecommers",
-    "enterprise",
-    "finance_risk",
-}
-
-VALID_DATA_QUALITY = {
-    "true_data",
-    "noisy_data",
-}
-
 def discover_files(base_dir: str):
     """
-    Recursively discover supported files and determine:
+    Recursively discover supported files.
 
-        industry
+    Expected NIST structure:
+
+        nist_dataset/
+        ├── cybersecurity_framework/
+        │   └── file
+        ├── ai_risk_management/
+        │   └── file
+        ├── zero_trust/
+        │   └── file
+        ├── secure_software/
+        │   └── file
+        └── noisy_data/
+            └── file
+
+    Metadata:
+        source_category
         data_quality
-
-    Expected directory structure:
-
-        dataset/
-        ├── Logistics/
-        │   ├── true_data/
-        │   └── noisy_data/
-        ├── Ecommers/
-        │   ├── true_data/
-        │   └── noisy_data/
-        ├── Enterprise/
-        │   ├── true_data/
-        │   └── noisy_data/
-        └── Finance_Risk/
-            ├── true_data/
-            └── noisy_data/
-
-    Returns:
-        (file_path, industry, data_quality)
     """
 
     base_path = Path(base_dir)
@@ -84,41 +65,53 @@ def discover_files(base_dir: str):
         # Ignore directories
         if not file_path.is_file():
             continue
+
         # Ignore macOS system files
         if file_path.name == ".DS_Store":
             continue
+
         # Ignore unsupported file types
         if file_path.suffix.lower() not in SUPPORTED_EXTENSIONS:
-            logfire.warning(f"Skipping unsupported file type: {file_path}")
+            logfire.warning(
+                f"Skipping unsupported file type: {file_path}"
+            )
             continue
 
-        # Get path relative to dataset directory
         relative_parts = file_path.relative_to(base_path).parts
 
-        # Expected:
-        # industry / data_quality / filename
-        if len(relative_parts) < 3:
-            logfire.warning(f"Invalid directory structure: {file_path}")
+        # We need at least:
+        # category / filename
+        if len(relative_parts) < 2:
+            logfire.warning(
+                f"Invalid directory structure: {file_path}"
+            )
             continue
 
-        # Get actual folder names
-        industry = relative_parts[0].lower()
-        data_quality = relative_parts[1].lower()
+        first_folder = relative_parts[0].lower()
 
-        # Validate industry
-        if industry not in VALID_INDUSTRIES:
-            logfire.warning(f"Unknown industry '{industry}' for file: {file_path}")
-            continue
+        # -----------------------------------------
+        # NOISY DATA
+        # -----------------------------------------
+        if first_folder == "noisy_data":
 
-        # Validate data quality
-        if data_quality not in VALID_DATA_QUALITY:
-            logfire.warning(f"Unknown data quality '{data_quality}' for file: {file_path}")
-            continue
+            source_category = "noisy_data"
+            data_quality = "noisy_data"
 
-        # Valid file discovered
-        logfire.info(f"Discovered file: {file_path} | industry={industry} | data_quality={data_quality}")
+        # -----------------------------------------
+        # TRUE / OFFICIAL DATA
+        # -----------------------------------------
+        else:
 
-        yield file_path, industry, data_quality
+            source_category = first_folder
+            data_quality = "true_data"
+
+        logfire.info(
+            f"Discovered file: {file_path} | "
+            f"source_category={source_category} | "
+            f"data_quality={data_quality}"
+        )
+
+        yield file_path, source_category, data_quality
 
 # Main Ingestion Controller
 def run_universal_ingestion(
@@ -169,7 +162,7 @@ def run_universal_ingestion(
         # 3. Ensure payload indexes exist
         qdrant_client.create_payload_index(
             collection_name=settings.QDRANT_COLLECTION,
-            field_name="industry",
+            field_name="source_category",
             field_schema=models.PayloadSchemaType.KEYWORD,
         )
 
@@ -181,7 +174,8 @@ def run_universal_ingestion(
 
         logfire.info(
             "Qdrant payload indexes ensured: "
-            "industry=KEYWORD, data_quality=KEYWORD"
+            "source_category=KEYWORD, "
+            "data_quality=KEYWORD"
         )
 
         # 4. Discover files recursively
@@ -189,16 +183,16 @@ def run_universal_ingestion(
         logfire.info(f"Discovered {len(files)} supported files for ingestion.")
 
         # 5. Process every file
-        for (file_path,industry,data_quality,) in files:
+        for (file_path, source_category, data_quality) in files:
             process_file(
                 file_path=str(file_path),
                 filename=file_path.name,
-                industry=industry,
+                source_category=source_category,
                 data_quality=data_quality,
             )
 
 # Process One File
-def process_file(file_path: str,filename: str,industry: str,data_quality: str):
+def process_file(file_path: str,filename: str,source_category: str,data_quality: str):
     """
     Process a single file.
     Pipeline:
@@ -214,7 +208,7 @@ def process_file(file_path: str,filename: str,industry: str,data_quality: str):
           ↓
         Qdrant
     """
-    with logfire.span( "Processing File",file=filename,industry=industry,data_quality=data_quality,):
+    with logfire.span( "Processing File",file=filename,source_category=source_category,data_quality=data_quality,):
         try:
             # 1. Determine file extension
             ext = filename.lower().rsplit(".", 1)[-1]
@@ -246,7 +240,7 @@ def process_file(file_path: str,filename: str,industry: str,data_quality: str):
                         content=content,
                         source=file_path,
                         metadata={
-                            "industry": industry,
+                            "source_category": source_category,
                             "data_quality": data_quality,
                             "source_type": "csv",
                         },
@@ -267,7 +261,7 @@ def process_file(file_path: str,filename: str,industry: str,data_quality: str):
                 chunks = chunk_text(
                     full_text,
                     source=file_path,
-                    industry=industry,
+                    source_category=source_category,
                     data_quality=data_quality,
                 )
 
@@ -279,7 +273,7 @@ def process_file(file_path: str,filename: str,industry: str,data_quality: str):
             # 5. Save processed metadata locally
             processed_data = {
                 "filename": filename,
-                "industry": industry,
+                "source_category": source_category,
                 "data_quality": data_quality,
                 "chunks": [
                     chunk.model_dump()
@@ -288,7 +282,7 @@ def process_file(file_path: str,filename: str,industry: str,data_quality: str):
             }
 
             
-            local_path = save_processed_locally(data=processed_data,industry=industry,data_quality=data_quality,filename=filename)
+            local_path = save_processed_locally(data=processed_data,source_category=source_category,data_quality=data_quality,filename=filename)
             logfire.info(f"Saved processed data → {local_path}")
 
             # 6. Generate embeddings
@@ -303,7 +297,7 @@ def process_file(file_path: str,filename: str,industry: str,data_quality: str):
                             "text": chunk.content,
                             "source": chunk.source,
                             "page": chunk.page,
-                            "industry": chunk.metadata.get("industry"),
+                            "source_category": chunk.metadata.get("source_category"),
                             "data_quality": chunk.metadata.get("data_quality"),
                             "source_type": chunk.metadata.get("source_type"),
                             "metadata": chunk.metadata,
@@ -325,11 +319,11 @@ def process_file(file_path: str,filename: str,industry: str,data_quality: str):
         except Exception as e:
             logfire.error(f"Failed to process {filename}: {e}")
 # Save Processed JSON
-def save_processed_locally(data: dict,industry: str,data_quality: str,filename: str,) -> str:
+def save_processed_locally(data: dict,source_category: str,data_quality: str,filename: str,) -> str:
     """
     Save processed chunk metadata as: processed_data
     """
-    folder = os.path.join(PROCESSED_DATA_DIR,industry,data_quality)
+    folder = os.path.join(PROCESSED_DATA_DIR,source_category,data_quality)
     os.makedirs(folder,exist_ok=True)
     dest = os.path.join(folder,f"{filename}.json")
     with open(dest,"w",encoding="utf-8",) as f:

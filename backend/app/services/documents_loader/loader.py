@@ -158,32 +158,6 @@ def parse_json(file_path: str):
                 f"JSON Parse Failed for {file_path}: {e}"
             )
             raise
-        
-# CSV Parsing
-def parse_csv(file_path: str):
-    """
-    Parses CSV files and converts rows into readable text for RAG.
-    """
-    with logfire.span("CSV Parsing", filename=file_path):
-        try:
-            rows = []
-            with open(file_path,"r",encoding="utf-8",errors="ignore",newline="",) as f:
-                reader = csv.DictReader(f)
-
-                for row in reader:
-                    rows.append(" | ".join(f"{key}: {value}" for key, value in row.items()))
-
-            text = "\n\n".join(rows)
-
-            if not text.strip():
-                logfire.warning(f"CSV file is empty: {file_path}")
-            else:
-                logfire.info(f"Successfully parsed {len(text)} characters")
-            return text
-
-        except Exception as e:
-            logfire.error(f"CSV Parse Failed for {file_path}: {e}")
-            raise
 
 # CSV Parsing
 def parse_csv(file_path: str,rows_per_chunk: int = 100):

@@ -10,7 +10,7 @@ qdrant_client = QdrantClient(
 )
 
 # Search Function
-def search_cognitiveai_knowledge(query: str,limit: int = 15,industry: str | None = None,data_quality: str | None = None,) -> list[dict]:
+def search_cognitiveai_knowledge(query: str,limit: int = 15,source_category: str | None = None,data_quality: str | None = None,) -> list[dict]:
     """
     Performs .
     Performs a high-precision semantic similarity search in Qdrant.
@@ -31,8 +31,8 @@ def search_cognitiveai_knowledge(query: str,limit: int = 15,industry: str | None
         # 2. Build metadata filters
         filter_conditions = []
 
-        if industry:
-            filter_conditions.append(FieldCondition(key="industry",match=MatchValue(value=industry)))
+        if source_category:
+            filter_conditions.append(FieldCondition(key="source_category",match=MatchValue(value=source_category)))
 
         if data_quality:
             filter_conditions.append(FieldCondition(key="data_quality",match=MatchValue(value=data_quality)))
@@ -43,7 +43,7 @@ def search_cognitiveai_knowledge(query: str,limit: int = 15,industry: str | None
             query_filter = Filter(must=filter_conditions)
 
         # 3. Qdrant similarity search
-        logfire.info("Qdrant search",collection=collection_name,embedding_model="all-mpnet-base-v2",limit=limit,industry=industry,data_quality=data_quality)
+        logfire.info("Qdrant search",collection=collection_name,embedding_model="all-mpnet-base-v2",limit=limit,source_category=source_category,data_quality=data_quality)
 
         response = qdrant_client.query_points(collection_name=collection_name,query=query_vector,query_filter=query_filter,limit=limit,with_payload=True).points
 
@@ -64,7 +64,7 @@ def search_cognitiveai_knowledge(query: str,limit: int = 15,industry: str | None
                 ),
                 "source": payload.get("source"),
                 "page": payload.get("page"),
-                "industry": payload.get("industry"),
+                "source_category": payload.get("source_category"),
                 "data_quality": payload.get("data_quality"),
                 "source_type": payload.get("source_type"),
                 "metadata": payload.get("metadata", {}),

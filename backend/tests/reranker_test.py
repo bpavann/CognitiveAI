@@ -1,5 +1,5 @@
 from app.services.retrieval.qdrant_service import search_cognitiveai_knowledge
-from app.services.retrieval.reranking_service import rerank_documents_fr
+from app.services.retrieval.reranking_service import rerank_documents_cai
 
 
 query = "What is Zero Trust Architecture according to NIST SP 800-207?"
@@ -11,7 +11,7 @@ results = search_cognitiveai_knowledge(
 
 print(f"Qdrant results: {len(results)}")
 
-reranked = rerank_documents_fr(
+reranked = rerank_documents_cai(
     query=query,
     documents=results,
     top_n=5,

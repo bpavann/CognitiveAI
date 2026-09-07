@@ -22,7 +22,7 @@ def _get_ranker()-> Ranker:
             _ranker=Ranker()
     return _ranker
 
-def rerank_documents_fr(query: str,documents: list[dict],top_n: int = 5,) -> list[dict]:
+def rerank_documents_cai(query: str,documents: list[dict],top_n: int = 5,) -> list[dict]:
     """
     Refines retrieval results by re-scoring documents against the query semantically.
     

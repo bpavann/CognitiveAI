@@ -9,6 +9,9 @@ __pycache__/
 .DS_Store/
 /.DS_Store
 
+# Dataset
+nist_dataset/
+
 processed_data/
 
 backend/temp/

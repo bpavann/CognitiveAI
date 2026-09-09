@@ -1,6 +1,6 @@
 import logfire
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from app.core.settings import settings
+from app.config.settings import settings
 from sentence_transformers import SentenceTransformer
 
 BATCH_SIZE = 10

@@ -24,13 +24,17 @@ def retrieve_node(state: AgentState):
     # 4. Rerank documents
     with logfire.span("⚖️ Semantic Reranking"):
 
-        reranked_documents = rerank_documents_cai(query,documents,top_n=5)
+        reranked_documents = rerank_documents_cai(query,raw_results,top_n=5)
 
         logfire.info("Reranking complete. Kept top 5 documents.")
         
     # 5. Format documents for Responder
     formatted_documents = [
         f"CONTENT: {doc}"
+        for doc in reranked_documents
+    ]
+    formatted_documents = [
+        f"CONTENT: {doc['content']}"
         for doc in reranked_documents
     ]
 

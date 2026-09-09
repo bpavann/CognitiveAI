@@ -7,13 +7,13 @@ from app.agents.responder_node import generate_node
 from app.agents.coding_node import coding_agent_node
 
 # Create workflow
-workflow = StateGraph(AgentState)
+graph = StateGraph(AgentState)
 
 # Nodes
-workflow.add_node("planner",planner_node)
-workflow.add_node("retriever",retrieve_node,)
-workflow.add_node("responder",generate_node)
-workflow.add_node("coding_agent", coding_agent_node)
+graph.add_node("planner",planner_node)
+graph.add_node("retriever",retrieve_node,)
+graph.add_node("responder",generate_node)
+graph.add_node("coding_agent", coding_agent_node)
 
 # Planner routing
 def route_planner(state: AgentState):
@@ -24,8 +24,8 @@ def route_planner(state: AgentState):
     return "responder"
 
 # Entry point and node connection
-workflow.set_entry_point("planner")
-workflow.add_conditional_edges(
+graph.set_entry_point("planner")
+graph.add_conditional_edges(
     "planner",
     route_planner,
     {
@@ -34,13 +34,13 @@ workflow.add_conditional_edges(
         "responder": "responder",
     },
 )
-workflow.add_edge("coding_agent", "responder")
+graph.add_edge("coding_agent", "responder")
 
-workflow.add_edge("retriever","responder")
-workflow.add_edge("responder",END)
+graph.add_edge("retriever","responder")
+graph.add_edge("responder",END)
 
 # Memory
 checkpointer = MemorySaver()
 
 # Compile
-cognitive_ai_agent = workflow.compile(checkpointer=checkpointer)
+cognitive_ai_agent = graph.compile(checkpointer=checkpointer)

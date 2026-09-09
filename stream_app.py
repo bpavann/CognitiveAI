@@ -1,9 +1,7 @@
 import httpx
 import streamlit as st
 
-
 API_URL = "http://127.0.0.1:8000"
-
 
 st.set_page_config(
     page_title="CognitiveAI",
@@ -11,9 +9,7 @@ st.set_page_config(
     layout="wide",
 )
 
-
 st.title("🧠 CognitiveAI")
-
 st.caption(
     "Modular Multi-Agent AI Orchestration Platform"
 )
@@ -24,9 +20,7 @@ if "messages" not in st.session_state:
 
 # Display conversation
 for message in st.session_state.messages:
-
     with st.chat_message(message["role"]):
-
         st.markdown(message["content"])
 
 # Chat Input
@@ -36,15 +30,9 @@ prompt = st.chat_input(
 
 if prompt:
     # Display user message
-    st.session_state.messages.append(
-        {
-            "role": "user",
-            "content": prompt,
-        }
-    )
+    st.session_state.messages.append({"role": "user","content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
-
 
     # Call FastAPI
     try:
@@ -53,23 +41,22 @@ if prompt:
             json={
                 "message": prompt
             },
-            timeout=30,
+            timeout=60,
         )
         response.raise_for_status()
         data = response.json()
         assistant_response = data["response"]
 
-    except httpx.HTTPError as error:
-        assistant_response = (
-            f"Backend connection failed: {error}"
-        )
+    except httpx.HTTPStatusError as error:
+        assistant_response = (f"API error: {error.response.status_code}")
 
-    # Display response
-    st.session_state.messages.append(
-        {
-            "role": "assistant",
-            "content": assistant_response,
-        }
-    )
+    except httpx.RequestError as error:
+        assistant_response = (f"Backend connection failed: {error}")
+
+    except Exception as error:
+        assistant_response = (f"Unexpected error: {error}")
+
+    # Display Assistant Response
+    st.session_state.messages.append({"role": "assistant","content": assistant_response})
     with st.chat_message("assistant"):
         st.markdown(assistant_response)

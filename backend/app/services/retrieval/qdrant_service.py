@@ -1,6 +1,6 @@
 import logfire
 from qdrant_client import QdrantClient
-from app.core.settings import settings
+from app.config.settings import settings
 from app.services.retrieval.embedding_service import embed_query
 from qdrant_client.models import Filter, FieldCondition, MatchValue
 

@@ -1,6 +1,6 @@
 import os
 
-from app.core.settings import settings
+from app.config.settings import settings
 
 
 def configure_langsmith() -> None:

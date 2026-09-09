@@ -1,6 +1,6 @@
 import time 
 import logfire
-import numpy as np
+#import numpy as np
 #from app.retrieval.embeddings import embed_query, embed_texts
 from flashrank import Ranker, RerankRequest
 

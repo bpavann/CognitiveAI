@@ -7,7 +7,7 @@ import uuid
 from pathlib import Path
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
-from app.core.settings import settings
+from app.config.settings import settings
 from app.services.documents_loader.schema import DocumentChunk
 from app.services.retrieval.embedding_service import embed_texts, get_embedding_dim
 from app.services.documents_loader.loader import parse_pdf,parse_html,parse_text,parse_office,parse_json,parse_csv,parse_xlsx

@@ -1,6 +1,6 @@
 from portkey_ai import Portkey,createHeaders, PORTKEY_GATEWAY_URL
 from langchain_openai import ChatOpenAI
-from app.core.settings import settings
+from app.config.settings import settings
 
 # Initialize Portkey client
 portkey_client = Portkey(

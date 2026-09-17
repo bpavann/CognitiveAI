@@ -1,0 +1,21 @@
+define user asks about cognitiveai
+  "What is CognitiveAI?"
+  "What does CognitiveAI do?"
+  "Explain CognitiveAI"
+
+define bot explain cognitiveai
+  "CognitiveAI is a modular AI decision intelligence platform that uses knowledge retrieval, reasoning, and guardrails to provide grounded responses."
+
+define flow
+  user asks about cognitiveai
+  bot explain cognitiveai
+
+define flow prompt injection check
+  $is_injection = execute check_prompt_injection
+
+  if $is_injection
+    bot refuse prompt injection
+    stop
+
+define bot refuse prompt injection
+  "I'm sorry, I can't respond to requests that attempt to bypass or manipulate my instructions."

@@ -3,6 +3,7 @@ from qdrant_client import QdrantClient
 from app.config.settings import settings
 from app.services.retrieval.embedding_service import embed_query
 from qdrant_client.models import Filter, FieldCondition, MatchValue
+from app.nemoguard.security_check import mask_retrieval_pii, check_retrieval_security, check_retrieval_relevance, mark_untrusted_context
 
 qdrant_client = QdrantClient(
     url=settings.QDRANT_URL,
@@ -24,27 +25,21 @@ def search_cognitiveai_knowledge(query: str,limit: int = 15,source_category: str
     try:
         # 1. Generate query embedding
         query_vector = embed_query(query)
-
         # Select matching collection
         collection_name = settings.QDRANT_COLLECTION
-
         # 2. Build metadata filters
         filter_conditions = []
-
         if source_category:
             filter_conditions.append(FieldCondition(key="source_category",match=MatchValue(value=source_category)))
-
         if data_quality:
             filter_conditions.append(FieldCondition(key="data_quality",match=MatchValue(value=data_quality)))
 
         query_filter = None
-
         if filter_conditions:
             query_filter = Filter(must=filter_conditions)
 
         # 3. Qdrant similarity search
         logfire.info("Qdrant search",collection=collection_name,embedding_model="all-mpnet-base-v2",limit=limit,source_category=source_category,data_quality=data_quality)
-
         response = qdrant_client.query_points(collection_name=collection_name,query=query_vector,query_filter=query_filter,limit=limit,with_payload=True).points
 
     except Exception as exc:
@@ -53,15 +48,35 @@ def search_cognitiveai_knowledge(query: str,limit: int = 15,source_category: str
 
     # 4. Format retrieval results
     results = []
+    blocked_results = 0
     for hit in response:
+        logfire.info("Retrieval relevance score",score=hit.score,source=(hit.payload or {}).get("source"))
         payload = hit.payload or {}
+        content = (payload.get("text") or payload.get("content") or "")
+
+        # Suspicios content
+        if not check_retrieval_security(content):
+            blocked_results += 1
+            logfire.warning("🚨 Suspicious retrieval content blocked",source=payload.get("source"),page=payload.get("page"))
+            continue
+
+        # Relevance
+        if not check_retrieval_relevance(hit.score):
+            blocked_results += 1
+            logfire.warning(
+                "⚠️ Irrelevant retrieval content blocked",
+                score=hit.score,
+                source=payload.get("source"),
+                page=payload.get("page")
+            )
+            continue
+
+        # MASKING
+        content = mask_retrieval_pii(content)
+        content = mark_untrusted_context(content)
         results.append(
             {
-                "content": (
-                    payload.get("text")
-                    or payload.get("content")
-                    or ""
-                ),
+                "content": content,
                 "source": payload.get("source"),
                 "page": payload.get("page"),
                 "source_category": payload.get("source_category"),
@@ -71,5 +86,5 @@ def search_cognitiveai_knowledge(query: str,limit: int = 15,source_category: str
                 "score": hit.score,
             }
         )
-    logfire.info(f"Qdrant returned {len(results)} results")
+    logfire.info(f"Qdrant returned {len(results)} safe results",blocked_results=blocked_results)
     return results

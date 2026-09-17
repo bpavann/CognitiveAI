@@ -44,13 +44,14 @@ def rerank_documents_cai(query: str,documents: list[dict],top_n: int = 5,) -> li
         passages = [{"id": index,"text": document.get("content", "")} for index, document in enumerate(documents)]
         request = RerankRequest(query=query,passages=passages)
         result = ranker.rerank(request)
+
         reranked_documents = []
+    
         for rr in result[:top_n]:
             original_index = rr["id"]
             original_document = documents[original_index].copy()
-            original_document["rerank_score"] = rr["score"]
+            original_document["rerank_score"] = float(rr["score"])
             reranked_documents.append(original_document)
-
         duration = time.time() - start_time
         top_score = (reranked_documents[0]["rerank_score"] if reranked_documents else None)
         logfire.info(f"[Reranker] Completed in {duration:.2f}s | Top score: {top_score}")

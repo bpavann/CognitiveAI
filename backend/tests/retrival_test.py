@@ -1,7 +1,7 @@
 from app.services.retrieval.qdrant_service import search_cognitiveai_knowledge
 
 
-query = "What is Zero Trust Architecture according to NIST SP 800-207?"
+query = "Contact John Smith at john@example.com or call 305-555-1234."
 
 results = search_cognitiveai_knowledge(
     query=query,

@@ -1,65 +1,77 @@
+# AI / LLM FRAMEWORKS
 langchain
-langgraph
-langsmith
-langchain_community
+langchain-community
 langchain-openai
 langchain-groq
-python-dotenv
+langchain-ollama
+langchain-google-genai
+langchain-huggingface
+langchain-text-splitters
+langchain-unstructured
+langchain-docling
+langchain-experimental
+langchain-opendataloader-pdf
+langchain-pymupdf4llm
+langchain-chroma
+langchain-nvidia-ai-endpoints
 
+# AGENTIC AI / ORCHESTRATION
+langgraph
+deepagents
+mcp
+langchain-mcp-adapters
+langchain-tavily
+
+# RAG / VECTOR DATABASE / RETRIEVAL
+qdrant-client
+faiss-cpu
+chromadb
+sentence-transformers
+flashrank
+tiktoken
+
+# DOCUMENT INGESTION / PROCESSING
+pypdf
+pymupdf
+pdfplumber
+pdfminer
+unstructured
+unstructured-client
+python-magic
+python-docx
+docx2txt
+jq
+pandas
+openpyxl
+
+# LLM INFRASTRUCTURE / GATEWAY
+portkey-ai
+
+# AI SECURITY / GUARDRAILS
+nemoguardrails
+presidio-analyzer
+presidio-anonymizer
+
+# BACKEND / API
 fastapi
 uvicorn[standard]
 pydantic-settings
+python-dotenv
+
+# FRONTEND
 streamlit
 
-langchain-ollama
-langchain-google-genai
-langchain-tavily
-deepagents
-langchain-mcp-adapters
-langchain-text-splitters
-mcp
-faiss-cpu
-tiktoken
-chromadb
-sentence-transformers
-langchain_unstructured
-pypdf
-python-dotenv
-pymupdf
-pdfplumber
-unstructured
-pdfminer
-python-docx
-docx2txt
-accelerate
-pandas
-openpyxl
-langchain-docling
-jq
-matplotlib
-## Embeddings
-langchain-huggingface
-sentence-transformers
-langchain-experimental
-wikipedia
-langgraph
-
-unstructured-client
-python-magic
-langchain-opendataloader-pdf
-langchain-pymupdf4llm
-langchain_chroma
-
+# OBSERVABILITY / MONITORING
 logfire
-"logfire[fastapi]"
-portkey_ai
-jinja2
+logfire[fastapi]
+langsmith
 
-pytest 
-httpx 
+# DATA / ML SUPPORT
+accelerate
+matplotlib
+wikipedia
+
+# TESTING / CODE QUALITY
+pytest
+httpx
 ruff
-
-qdrant_client
-flashrank
-
-

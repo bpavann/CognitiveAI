@@ -5,31 +5,23 @@ from app.services.llmgateway.client import portkey_client,extract_cache_status
 def generate_node(state: AgentState):
     """
     Generates the final response.
-
     Handles:
         - CONVERSATIONAL requests
         - RESEARCH requests
         - Temporary CODING fallback
-
     Research requests use retrieved Qdrant context.
     """
 
     agent_type = state["agent_type"]
-
     history_str = ""
 
     for msg in state["messages"][:-1]:
-
         role = (
             "User"
             if msg["role"] == "user"
             else "Assistant"
         )
-
-        history_str += (
-            f"{role}: {msg['content']}\n"
-        )
-
+        history_str += (f"{role}: {msg['content']}\n")
     user_msg = (
         state["messages"][-1]["content"]
         if state["messages"]
@@ -40,14 +32,11 @@ def generate_node(state: AgentState):
     if agent_type == "CONVERSATIONAL":
         logfire.info("Generating conversational response.")
         prompt = f"""
-        You are a friendly and helpful Enterprise AI Assistant.
-
+        You ar a friendly and helpful Enterprise AI Assistant.
         Answer the user's latest message naturally using the
         conversation history when useful.
-
         CONVERSATION HISTORY:
         {history_str}
-
         LATEST USER MESSAGE:
         "{user_msg}"
         """
@@ -58,20 +47,18 @@ def generate_node(state: AgentState):
         max_context_chars = 25000
         full_context = ""
         for doc in state.get("documents", []):
-            if (len(full_context) + len(doc)< max_context_chars):
-                full_context += (doc + "\n\n")
+            content= doc.get("content","")
+            if (len(full_context) + len(content)< max_context_chars):
+                full_context += content + "\n\n"
             else:
                 logfire.warning("Context truncated.")
                 break
 
         prompt = f"""
         You are a Senior Technical Architect.
-
         Answer the user's question using the provided
         technical context.
-
         Use the context as the primary source of truth.
-
         If the context does not contain enough information,
         clearly state that instead of inventing facts.
 
@@ -90,10 +77,8 @@ def generate_node(state: AgentState):
         logfire.info("Generating temporary coding response.")
         prompt = f"""
         You are a senior software engineer.
-
         Answer the user's coding question clearly and
         provide correct code when required.
-
         CONVERSATION HISTORY:
         {history_str}
 
@@ -103,14 +88,10 @@ def generate_node(state: AgentState):
 
     # LLM Generation
     with logfire.span("✍️ LLM Synthesis"):
-
         try:
             response = portkey_client.chat.completions.create(messages=[{"role": "user","content": prompt}],temperature=0.1)
-
             content = (response.choices[0].message.content)
-
             cache_status = extract_cache_status(response)
-
             is_cache_hit = (cache_status == "HIT")
             if is_cache_hit:
                 logfire.info("⚡ Portkey cache hit.")
@@ -124,12 +105,7 @@ def generate_node(state: AgentState):
                 "final_answer": content,
                 "status": status,
                 "plan": plan_update,
-                "messages": [
-                    {
-                        "role": "assistant",
-                        "content": content,
-                    }
-                ],
+                "messages": [{"role": "assistant","content": content}]
             }
         except Exception as e:
             logfire.error(f"LLM Generation failed: {e}")

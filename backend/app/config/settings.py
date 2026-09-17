@@ -50,5 +50,8 @@ class Settings:
     # Logfire
     LOGFIRE_TOKEN = os.getenv("LOGFIRE_TOKEN")
 
+    # Guardrails
+   
+
 
 settings = Settings()

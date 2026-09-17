@@ -1,0 +1,25 @@
+models:
+  - type: main
+    engine: openai
+    model: gpt-3.5-turbo
+
+rails:
+  input:
+    flows:
+      - self check input
+      - jailbreak detection heuristics
+      - mask sensitive data on input
+      - prompt injection check
+
+  output:
+    flows:
+      - self check output
+
+  config:
+    sensitive_data_detection:
+      input:
+        entities:
+          - PERSON
+          - EMAIL_ADDRESS
+          - PHONE_NUMBER
+          - CREDIT_CARD
